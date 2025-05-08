@@ -6,23 +6,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #f6f8fa; }
+        .card {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px 0 rgba(31, 41, 55, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+        .sidebar-section {
+            background: #f6f8fa;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+        .sidebar-title {
+            color: #0ea5e9;
+            font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+        }
+        .sidebar-list li {
+            margin-bottom: 0.5rem;
+        }
+        .blue-btn {
+            background: #0ea5e9;
+            color: #fff;
+            border: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .blue-btn:hover {
+            background: #0369a1;
+            color: #fff;
+        }
+        .blue-input {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #e5e7eb;
+        }
+        .blue-input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 2px #bae6fd;
+        }
+        .error-red {
+            color: #FF1744;
+            font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+        }
+        .result-blue {
+            color: #0ea5e9;
+            font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f1f5f9; color: #1e293b; font-weight: 600; }
+        td { background: #fff; color: #1e293b; }
+        .banner-cell { font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace; font-size: 0.95em; color: #64748b; }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-center text-blue-600">Open Port Scanner</h1>
-        <form id="scanForm" class="space-y-4">
-            <input type="text" id="target" placeholder="Target IP or domain" required
-                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
-            <div class="flex space-x-2">
-                <input type="number" id="start" placeholder="Start Port" required
-                    class="w-1/2 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
-                <input type="number" id="end" placeholder="End Port" required
-                    class="w-1/2 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
+<body class="min-h-screen flex items-center justify-center">
+    <div class="flex w-full min-h-screen">
+        <!-- Left Sidebar: Common IPs & Ports -->
+        <aside class="hidden lg:flex flex-col p-10 w-80 border-r border-gray-200 bg-[#f6f8fa]">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Common IPs</div>
+                <ul class="text-blue-700 sidebar-list text-sm">
+                    <li><span class="font-semibold">Localhost:</span> 127.0.0.1</li>
+                    <li><span class="font-semibold">Router:</span> 192.168.1.1</li>
+                    <li><span class="font-semibold">Google DNS:</span> 8.8.8.8</li>
+                    <li><span class="font-semibold">Cloudflare DNS:</span> 1.1.1.1</li>
+                    <li><span class="font-semibold">Test Host:</span> scanme.nmap.org</li>
+                </ul>
             </div>
-            <button type="submit"
-                class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Scan</button>
-        </form>
-        <div id="results" class="mt-6 text-center text-lg font-semibold text-gray-700"></div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Common Ports</div>
+                <ul class="text-blue-700 sidebar-list text-sm">
+                    <li><span class="font-semibold">21:</span> FTP</li>
+                    <li><span class="font-semibold">22:</span> SSH</li>
+                    <li><span class="font-semibold">23:</span> Telnet</li>
+                    <li><span class="font-semibold">25:</span> SMTP</li>
+                    <li><span class="font-semibold">53:</span> DNS</li>
+                    <li><span class="font-semibold">80:</span> HTTP</li>
+                    <li><span class="font-semibold">110:</span> POP3</li>
+                    <li><span class="font-semibold">143:</span> IMAP</li>
+                    <li><span class="font-semibold">443:</span> HTTPS</li>
+                    <li><span class="font-semibold">3306:</span> MySQL</li>
+                    <li><span class="font-semibold">3389:</span> RDP</li>
+                    <li><span class="font-semibold">8080:</span> HTTP-alt</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col items-center justify-center p-8">
+            <div class="card p-10 w-full max-w-2xl relative">
+                <!-- About/Info -->
+                <div class="mb-10">
+                    <h1 class="text-3xl font-bold text-center text-gray-900 mb-4 tracking-wider">Open Port Scanner</h1>
+                    <p class="text-gray-600 text-center text-base">
+                        Enter a target IP or domain and a port range to scan for open TCP ports.<br>
+                        This tool uses Go for fast, concurrent scanning and runs entirely on your machine.
+                    </p>
+                </div>
+                <!-- Form -->
+                <form id="scanForm" class="space-y-6 mb-8">
+                    <input type="text" id="target" placeholder="Target IP or domain" required
+                        class="w-full px-5 py-3 rounded-lg blue-input text-lg" />
+                    <div class="flex space-x-4">
+                        <input type="number" id="start" placeholder="Start Port" required
+                            class="w-1/2 px-5 py-3 rounded-lg blue-input text-lg" />
+                        <input type="number" id="end" placeholder="End Port" required
+                            class="w-1/2 px-5 py-3 rounded-lg blue-input text-lg" />
+                    </div>
+                    <button type="submit"
+                        class="w-full py-3 rounded-lg blue-btn font-bold text-lg tracking-wide">Scan</button>
+                </form>
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="hidden absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-10 rounded-2xl">
+                    <svg class="animate-spin h-12 w-12 text-blue-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="#38bdf8" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="#38bdf8" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                    <span class="text-blue-700 font-semibold text-xl">Scanning...</span>
+                </div>
+                <!-- GeoIP Info -->
+                <div id="geoip" class="mb-6 text-center text-blue-700 text-base"></div>
+                <!-- Export Buttons -->
+                <div class="flex justify-center gap-4 mb-4">
+                    <button id="exportJson" class="blue-btn px-4 py-2 rounded font-semibold">Export as JSON</button>
+                    <button id="exportCsv" class="blue-btn px-4 py-2 rounded font-semibold">Export as CSV</button>
+                </div>
+                <!-- Results Table -->
+                <div id="results" class="mt-4"></div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar: Info -->
+        <aside class="hidden lg:flex flex-col p-10 w-[28rem] border-l border-gray-200 bg-[#f6f8fa]">
+            <div class="sidebar-section">
+                <div class="sidebar-title">About Port Scanning</div>
+                <p class="text-blue-700 text-base mb-4">
+                    <span class="font-semibold">What is Port Scanning?</span><br>
+                    Port scanning is the process of probing a host for open ports. Each port represents a potential entry point to a service or application running on the target.
+                </p>
+                <p class="text-blue-700 text-base mb-4">
+                    <span class="font-semibold">Why is it Important?</span><br>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>Helps network administrators identify open and potentially vulnerable services.</li>
+                        <li>Used in penetration testing to assess security.</li>
+                        <li>Useful for troubleshooting network issues.</li>
+                    </ul>
+                </p>
+                <p class="text-blue-700 text-base mb-4">
+                    <span class="font-semibold">Real-Life Uses:</span>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>Security audits and vulnerability assessments</li>
+                        <li>Network inventory and management</li>
+                        <li>Firewall and security policy testing</li>
+                        <li>Finding unauthorized or forgotten services</li>
+                    </ul>
+                </p>
+                <p class="text-blue-700 text-xs mt-4">
+                    <span class="font-semibold">Tip:</span> Try scanning <span class="font-mono">scanme.nmap.org</span> for demo purposes.<br>
+                    <span class="font-semibold">Note:</span> Scanning public servers without permission may be against their terms of service.
+                </p>
+            </div>
+        </aside>
     </div>
     <script src="script.js"></script>
 </body>
