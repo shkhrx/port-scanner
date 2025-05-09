@@ -61,9 +61,9 @@ form.addEventListener('submit', async function(e) {
                 table += `
                     <tr>
                         <td class="result-blue font-bold text-lg">${port.port}</td>
-                        <td>${port.service || '-'}</td>
-                        <td>${port.response_ms}</td>
-                        <td class="banner-cell">${port.banner ? port.banner.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '-'}</td>
+                        <td class="font-semibold text-gray-700">${port.service || '-'}</td>
+                        <td class="text-gray-600">${port.response_ms} ms</td>
+                        <td class="banner-cell whitespace-pre-wrap break-all">${port.banner ? port.banner.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim() : '-'}</td>
                     </tr>
                 `;
             });
