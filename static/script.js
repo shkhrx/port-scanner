@@ -1,3 +1,4 @@
+// Get references to DOM elements
 const form = document.getElementById('scanForm');
 const resultsDiv = document.getElementById('results');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -5,20 +6,25 @@ const geoipDiv = document.getElementById('geoip');
 const exportJsonBtn = document.getElementById('exportJson');
 const exportCsvBtn = document.getElementById('exportCsv');
 
+// Track if the last scan had any results
 let lastScanHasResults = false;
 
+// Handle form submission
 form.addEventListener('submit', async function(e) {
     e.preventDefault();
+    // Clear previous results
     resultsDiv.innerHTML = "";
     geoipDiv.innerHTML = "";
     loadingOverlay.classList.remove("hidden");
     lastScanHasResults = false;
 
+    // Get form values
     const target = document.getElementById('target').value;
     const start = parseInt(document.getElementById('start').value);
     const end = parseInt(document.getElementById('end').value);
 
     try {
+        // Send scan request to backend
         const res = await fetch('/scan', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -27,7 +33,7 @@ form.addEventListener('submit', async function(e) {
         if (!res.ok) throw new Error("Server error");
         const data = await res.json();
 
-        // GeoIP Info
+        // Display GeoIP information if available
         if (data.geoip) {
             geoipDiv.innerHTML = `
                 <div class="mb-2 font-semibold">GeoIP Info:</div>
@@ -42,7 +48,7 @@ form.addEventListener('submit', async function(e) {
             `;
         }
 
-        // Results Table
+        // Display scan results in a table
         if (data.ports && data.ports.length) {
             lastScanHasResults = true;
             let table = `
@@ -57,6 +63,7 @@ form.addEventListener('submit', async function(e) {
                     </thead>
                     <tbody>
             `;
+            // Add each port result to the table
             data.ports.forEach(port => {
                 table += `
                     <tr>
@@ -70,20 +77,25 @@ form.addEventListener('submit', async function(e) {
             table += `</tbody></table>`;
             resultsDiv.innerHTML = table;
         } else {
+            // Display message if no open ports found
             resultsDiv.innerHTML = `<div class="error-red">No open ports found.</div>`;
         }
     } catch (err) {
+        // Display error message if scan fails
         resultsDiv.innerHTML = `<div class="error-red">Error: ${err.message}</div>`;
     } finally {
+        // Hide loading overlay
         loadingOverlay.classList.add("hidden");
     }
 });
 
-// Export buttons
+// Handle JSON export button click
 exportJsonBtn.addEventListener('click', () => {
     if (!lastScanHasResults) return;
     window.location = '/export/json';
 });
+
+// Handle CSV export button click
 exportCsvBtn.addEventListener('click', () => {
     if (!lastScanHasResults) return;
     window.location = '/export/csv';

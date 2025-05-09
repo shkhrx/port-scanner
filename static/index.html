@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <title>Go Port Scanner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Base styles */
         body { background: #f6f8fa; }
+        
+        /* Card styling for main content */
         .card {
             background: #fff;
             border-radius: 1rem;
             box-shadow: 0 4px 24px 0 rgba(31, 41, 55, 0.08);
             border: 1px solid #e5e7eb;
         }
+        
+        /* Sidebar section styling */
         .sidebar-section {
             background: #f6f8fa;
             border-radius: 0.75rem;
@@ -21,6 +26,8 @@
             margin-bottom: 2rem;
             border: 1px solid #e5e7eb;
         }
+        
+        /* Sidebar title styling */
         .sidebar-title {
             color: #0ea5e9;
             font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
@@ -28,9 +35,13 @@
             font-weight: bold;
             margin-bottom: 0.75rem;
         }
+        
+        /* Sidebar list item spacing */
         .sidebar-list li {
             margin-bottom: 0.5rem;
         }
+        
+        /* Button styling */
         .blue-btn {
             background: #0ea5e9;
             color: #fff;
@@ -41,6 +52,8 @@
             background: #0369a1;
             color: #fff;
         }
+        
+        /* Input field styling */
         .blue-input {
             background: #f1f5f9;
             color: #1e293b;
@@ -51,26 +64,40 @@
             border-color: #0ea5e9;
             box-shadow: 0 0 0 2px #bae6fd;
         }
+        
+        /* Error message styling */
         .error-red {
             color: #FF1744;
             font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
         }
+        
+        /* Result text styling */
         .result-blue {
             color: #0ea5e9;
             font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
         }
+        
+        /* Table styling */
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
         th { background: #f1f5f9; color: #1e293b; font-weight: 600; }
         td { background: #fff; color: #1e293b; }
-        .banner-cell { font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace; font-size: 0.95em; color: #64748b; }
+        
+        /* Banner cell styling */
+        .banner-cell { 
+            font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace; 
+            font-size: 0.95em; 
+            color: #64748b; 
+        }
     </style>
+    <!-- Load Fira Mono font for monospace text -->
     <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700&display=swap" rel="stylesheet">
 </head>
 <body class="min-h-screen flex items-center justify-center">
     <div class="flex w-full min-h-screen">
         <!-- Left Sidebar: Common IPs & Ports -->
         <aside class="hidden lg:flex flex-col p-10 w-80 border-r border-gray-200 bg-[#f6f8fa]">
+            <!-- Common IPs Section -->
             <div class="sidebar-section">
                 <div class="sidebar-title">Common IPs</div>
                 <ul class="text-blue-700 sidebar-list text-sm">
@@ -81,6 +108,8 @@
                     <li><span class="font-semibold">Test Host:</span> scanme.nmap.org</li>
                 </ul>
             </div>
+            
+            <!-- Common Ports Section -->
             <div class="sidebar-section">
                 <div class="sidebar-title">Common Ports</div>
                 <ul class="text-blue-700 sidebar-list text-sm">
@@ -100,10 +129,10 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="flex-1 flex flex-col items-center justify-center p-8">
             <div class="card p-10 w-full max-w-2xl relative">
-                <!-- About/Info -->
+                <!-- Header Section -->
                 <div class="mb-10">
                     <h1 class="text-3xl font-bold text-center text-gray-900 mb-4 tracking-wider">Open Port Scanner</h1>
                     <p class="text-gray-600 text-center text-base">
@@ -111,7 +140,8 @@
                         This tool uses Go for fast, concurrent scanning and runs entirely on your machine.
                     </p>
                 </div>
-                <!-- Form -->
+                
+                <!-- Scan Form -->
                 <form id="scanForm" class="space-y-6 mb-8">
                     <input type="text" id="target" placeholder="Target IP or domain" required
                         class="w-full px-5 py-3 rounded-lg blue-input text-lg" />
@@ -124,6 +154,7 @@
                     <button type="submit"
                         class="w-full py-3 rounded-lg blue-btn font-bold text-lg tracking-wide">Scan</button>
                 </form>
+                
                 <!-- Loading Overlay -->
                 <div id="loadingOverlay" class="hidden absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-10 rounded-2xl">
                     <svg class="animate-spin h-12 w-12 text-blue-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -132,26 +163,31 @@
                     </svg>
                     <span class="text-blue-700 font-semibold text-xl">Scanning...</span>
                 </div>
-                <!-- GeoIP Info -->
+                
+                <!-- GeoIP Information Display -->
                 <div id="geoip" class="mb-6 text-center text-blue-700 text-base"></div>
+                
                 <!-- Export Buttons -->
                 <div class="flex justify-center gap-4 mb-4">
                     <button id="exportJson" class="blue-btn px-4 py-2 rounded font-semibold">Export as JSON</button>
                     <button id="exportCsv" class="blue-btn px-4 py-2 rounded font-semibold">Export as CSV</button>
                 </div>
-                <!-- Results Table -->
+                
+                <!-- Results Table Container -->
                 <div id="results" class="mt-4"></div>
             </div>
         </main>
 
-        <!-- Right Sidebar: Info -->
+        <!-- Right Sidebar: Information -->
         <aside class="hidden lg:flex flex-col p-10 w-[28rem] border-l border-gray-200 bg-[#f6f8fa]">
             <div class="sidebar-section">
                 <div class="sidebar-title">About Port Scanning</div>
+                <!-- What is Port Scanning -->
                 <p class="text-blue-700 text-base mb-4">
                     <span class="font-semibold">What is Port Scanning?</span><br>
                     Port scanning is the process of probing a host for open ports. Each port represents a potential entry point to a service or application running on the target.
                 </p>
+                <!-- Why is it Important -->
                 <p class="text-blue-700 text-base mb-4">
                     <span class="font-semibold">Why is it Important?</span><br>
                     <ul class="list-disc list-inside ml-4">
@@ -160,6 +196,7 @@
                         <li>Useful for troubleshooting network issues.</li>
                     </ul>
                 </p>
+                <!-- Real-Life Uses -->
                 <p class="text-blue-700 text-base mb-4">
                     <span class="font-semibold">Real-Life Uses:</span>
                     <ul class="list-disc list-inside ml-4">
@@ -169,6 +206,7 @@
                         <li>Finding unauthorized or forgotten services</li>
                     </ul>
                 </p>
+                <!-- Tips and Notes -->
                 <p class="text-blue-700 text-xs mt-4">
                     <span class="font-semibold">Tip:</span> Try scanning <span class="font-mono">scanme.nmap.org</span> for demo purposes.<br>
                     <span class="font-semibold">Note:</span> Scanning public servers without permission may be against their terms of service.
@@ -176,6 +214,7 @@
             </div>
         </aside>
     </div>
+    <!-- Load JavaScript functionality -->
     <script src="script.js"></script>
 </body>
 </html>
